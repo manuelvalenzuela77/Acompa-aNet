@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AcompañaNet</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  :root{
+    --paper:#F2F5F4;
+    --surface:#FFFFFF;
+    --surface-tint:#E9EFEC;
+    --ink:#172024;
+    --ink-soft:#4C5A5A;
+    --ink-faint:#7C8988;
+    --line:#D7DFDC;
+    --accent:#2F6F5E;
+    --accent-ink:#F3FAF7;
+    --accent-soft:#DCEBE5;
+    --warm:#B8813A;
+    --warm-soft:#F1E4CF;
+    --sem-green:#3F8F5F;
+    --sem-green-soft:#DDEEE3;
+    --sem-amber:#C7962E;
+    --sem-amber-soft:#F5EAD1;
+    --sem-red:#BE5138;
+    --sem-red-soft:#F5E1DA;
+    --shadow: 0 1px 2px rgba(23,32,36,.06), 0 8px 24px -12px rgba(23,32,36,.18);
+    --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --sans: "Work Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#121818;
+      --surface:#1A2120;
+      --surface-tint:#212928;
+      --ink:#E9EFEC;
+      --ink-soft:#AEBBB7;
+      --ink-faint:#7E8C89;
+      --line:#2C3634;
+      --accent:#5AB496;
+      --accent-ink:#0E1D18;
+      --accent-soft:#1E3A32;
+      --warm:#E0A45C;
+      --warm-soft:#3B2F1D;
+      --sem-green:#5FB585;
+      --sem-green-soft:#1C3327;
+      --sem-amber:#E3B84C;
+      --sem-amber-soft:#3A3018;
+      --sem-red:#E17A5C;
+      --sem-red-soft:#3A241D;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#121818;
+    --surface:#1A2120;
+    --surface-tint:#212928;
+    --ink:#E9EFEC;
+    --ink-soft:#AEBBB7;
+    --ink-faint:#7E8C89;
+    --line:#2C3634;
+    --accent:#5AB496;
+    --accent-ink:#0E1D18;
+    --accent-soft:#1E3A32;
+    --warm:#E0A45C;
+    --warm-soft:#3B2F1D;
+    --sem-green:#5FB585;
+    --sem-green-soft:#1C3327;
+    --sem-amber:#E3B84C;
+    --sem-amber-soft:#3A3018;
+    --sem-red:#E17A5C;
+    --sem-red-soft:#3A241D;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1100px;margin:0 auto;padding-inline:20px;}
+  h1,h2,h3,h4{font-family:var(--serif);font-weight:600;line-height:1.15;margin:0;text-wrap:balance;}
+  p{margin:0;}
+  a{color:var(--accent);}
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.72rem;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    color:var(--accent);
+    font-weight:600;
+  }
+  .tag{
+    font-family:var(--mono);
+    font-size:.7rem;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+  }
+
+  /* ---------- NAV ---------- */
+  header.site{
+    position:sticky;
+    top:env(safe-area-inset-top,0px);
+    z-index:50;
+    background:color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    max-width:1100px;margin:0 auto;padding:12px 20px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-mark{
+    width:30px;height:30px;border-radius:8px;
+    background:conic-gradient(from 200deg, var(--sem-green), var(--sem-amber), var(--sem-red), var(--sem-green));
+    flex:none;
+  }
+  .brand-name{font-family:var(--serif);font-weight:700;font-size:1.15rem;}
+  nav.links{display:flex;gap:2px;flex-wrap:wrap;}
+  nav.links a{
+    font-size:.85rem;font-weight:500;color:var(--ink-soft);
+    text-decoration:none;padding:8px 10px;border-radius:7px;
+  }
+  nav.links a:hover{background:var(--surface-tint);color:var(--ink);}
+  @media (max-width:760px){
+    nav.links{display:none;}
+  }
+
+  section{padding-block:64px;scroll-margin-top:70px;}
+  section.tint{background:var(--surface-tint);}
+  .section-head{max-width:640px;margin-bottom:36px;}
+  .section-head h2{font-size:clamp(1.5rem,3vw,2.1rem);margin-top:8px;}
+  .section-head p{color:var(--ink-soft);margin-top:12px;font-size:1.02rem;}
+
+  /* ---------- HERO ---------- */
+  .hero{padding-block:56px 48px;}
+  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:40px;align-items:start;}
+  @media (max-width:820px){.hero-grid{grid-template-columns:1fr;}}
+  .hero h1{font-size:clamp(2rem,4.4vw,3.1rem);margin-top:10px;}
+  .hero .lede{margin-top:18px;font-size:1.12rem;color:var(--ink-soft);max-width:52ch;}
+  .hero-actions{display:flex;gap:12px;margin-top:26px;flex-wrap:wrap;}
+  .btn{
+    font-family:var(--sans);font-weight:600;font-size:.92rem;
+    padding:11px 20px;border-radius:9px;border:1px solid transparent;
+    text-decoration:none;display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+  }
+  .btn-primary{background:var(--accent);color:var(--accent-ink);}
+  .btn-primary:hover{filter:brightness(1.06);}
+  .btn-ghost{background:transparent;border-color:var(--line);color:var(--ink);}
+  .btn-ghost:hover{background:var(--surface-tint);}
+
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:34px;}
+  @media (max-width:560px){.stat-row{grid-template-columns:1fr;}}
+  .stat{background:var(--surface);padding:18px 20px;}
+  .stat .n{font-family:var(--mono);font-size:1.6rem;font-weight:600;font-variant-numeric:tabular-nums;color:var(--accent);}
+  .stat .l{font-size:.82rem;color:var(--ink-soft);margin-top:4px;}
+
+  .hero-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:16px;
+    padding:24px;box-shadow:var(--shadow);
+  }
+  .hero-card h3{font-size:1.05rem;}
+  .quote{
+    margin-top:14px;font-size:.98rem;color:var(--ink-soft);
+    border-left:3px solid var(--accent);padding-left:14px;
+  }
+  .hero-card .who{margin-top:14px;font-size:.82rem;color:var(--ink-faint);font-family:var(--mono);}
+
+  /* ---------- RUTA ---------- */
+  .ruta{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;margin-top:10px;}
+  @media (max-width:820px){.ruta{grid-template-columns:1fr;}}
+  .ruta-step{position:relative;padding:26px 20px 22px;border-radius:14px;background:var(--surface);border:1px solid var(--line);}
+  .ruta-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  @media (max-width:820px){.ruta-row{grid-template-columns:1fr;}}
+  .ruta-num{
+    font-family:var(--mono);font-size:.78rem;color:var(--accent);
+    display:flex;align-items:center;gap:8px;font-weight:600;
+  }
+  .ruta-num .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  .ruta-step h4{margin-top:10px;font-size:1.08rem;}
+  .ruta-step p{margin-top:8px;font-size:.9rem;color:var(--ink-soft);}
+  .ruta-connector{
+    display:none;
+  }
+  @media (min-width:821px){
+    .ruta-row{position:relative;}
+    .ruta-row::before{
+      content:"";position:absolute;top:20px;left:calc(12.5% );right:calc(12.5%);
+      height:1px;background:repeating-linear-gradient(to right, var(--line) 0 6px, transparent 6px 12px);
+      z-index:0;
+    }
+  }
+
+  /* ---------- DDHH callout ---------- */
+  .ddhh{
+    margin-top:40px;background:var(--accent-soft);border:1px solid var(--line);
+    border-radius:16px;padding:28px clamp(20px,4vw,40px);
+    display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;
+  }
+  @media (max-width:640px){.ddhh{grid-template-columns:1fr;}}
+  .ddhh .mark{font-family:var(--serif);font-size:2.6rem;color:var(--accent);line-height:1;}
+  .ddhh p{font-size:1.02rem;}
+  .ddhh .art{margin-top:8px;font-family:var(--mono);font-size:.78rem;color:var(--ink-soft);}
+
+  /* ---------- SEMAFORO / ENCUESTA ---------- */
+  .sem-legend{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:8px;}
+  @media (max-width:700px){.sem-legend{grid-template-columns:1fr;}}
+  .sem-card{border-radius:14px;padding:18px;border:1px solid var(--line);}
+  .sem-card.green{background:var(--sem-green-soft);}
+  .sem-card.amber{background:var(--sem-amber-soft);}
+  .sem-card.red{background:var(--sem-red-soft);}
+  .sem-dot{width:14px;height:14px;border-radius:50%;display:inline-block;margin-right:8px;vertical-align:-1px;}
+  .sem-card.green .sem-dot{background:var(--sem-green);}
+  .sem-card.amber .sem-dot{background:var(--sem-amber);}
+  .sem-card.red .sem-dot{background:var(--sem-red);}
+  .sem-card h4{font-size:1rem;display:inline;}
+  .sem-card p{margin-top:8px;font-size:.88rem;color:var(--ink-soft);}
+
+  .demo{
+    margin-top:44px;background:var(--surface);border:1px solid var(--line);
+    border-radius:18px;padding:clamp(18px,4vw,32px);box-shadow:var(--shadow);
+  }
+  .demo-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;}
+  .demo-head h3{font-size:1.2rem;}
+  .demo-head .badge{
+    font-family:var(--mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;
+    background:var(--warm-soft);color:var(--warm);padding:5px 10px;border-radius:100px;white-space:nowrap;
+  }
+  .q-grid{display:grid;gap:16px;margin-top:24px;}
+  .q{border-top:1px solid var(--line);padding-top:16px;}
+  .q:first-child{border-top:none;padding-top:0;}
+  .q-label{font-weight:600;font-size:.95rem;}
+  .q-sub{font-size:.82rem;color:var(--ink-faint);margin-top:2px;}
+  .opts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+  .opt{
+    font-size:.85rem;padding:8px 14px;border-radius:100px;border:1px solid var(--line);
+    background:var(--paper);cursor:pointer;font-family:var(--sans);color:var(--ink);
+  }
+  .opt[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);}
+  .demo-actions{display:flex;align-items:center;gap:14px;margin-top:26px;flex-wrap:wrap;}
+  .demo-result{
+    margin-top:20px;border-radius:14px;padding:18px 20px;border:1px solid var(--line);
+    display:none;align-items:center;gap:16px;
+  }
+  .demo-result.show{display:flex;}
+  .demo-result .sw{width:34px;height:34px;border-radius:50%;flex:none;}
+  .demo-result h4{font-size:1.02rem;}
+  .demo-result p{font-size:.86rem;color:var(--ink-soft);margin-top:2px;}
+  .demo-note{margin-top:16px;font-size:.78rem;color:var(--ink-faint);}
+
+  /* ---------- TOGGLE TUTORES/ESTUDIANTES ---------- */
+  .toggle-wrap{display:flex;justify-content:center;margin-bottom:36px;}
+  .toggle{
+    display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:100px;padding:4px;
+  }
+  .toggle button{
+    font-family:var(--sans);font-weight:600;font-size:.9rem;border:none;background:transparent;
+    color:var(--ink-soft);padding:9px 20px;border-radius:100px;cursor:pointer;
+  }
+  .toggle button.active{background:var(--accent);color:var(--accent-ink);}
+  .pane{display:none;}
+  .pane.active{display:block;}
+
+  .card-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
+  @media (max-width:760px){.card-grid{grid-template-columns:1fr;}}
+  .info-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 22px;}
+  .info-card h4{font-size:1rem;display:flex;align-items:center;gap:8px;}
+  .info-card h4 .num{font-family:var(--mono);color:var(--accent);font-size:.85rem;}
+  .info-card ul{margin:10px 0 0;padding-left:18px;font-size:.9rem;color:var(--ink-soft);}
+  .info-card li+li{margin-top:6px;}
+  .info-card p{font-size:.9rem;color:var(--ink-soft);margin-top:8px;}
+
+  .protocol{
+    margin-top:20px;background:var(--sem-red-soft);border:1px solid var(--line);
+    border-radius:14px;padding:20px 22px;
+  }
+  .protocol h4{font-size:1rem;color:var(--sem-red);}
+  .protocol ol{margin:10px 0 0;padding-left:18px;font-size:.9rem;color:var(--ink-soft);}
+  .protocol li+li{margin-top:6px;}
+
+  .directorio{margin-top:20px;display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+  @media (max-width:700px){.directorio{grid-template-columns:1fr;}}
+  .dir-item{
+    border:1px dashed var(--line);border-radius:12px;padding:14px 16px;font-size:.88rem;
+  }
+  .dir-item .role{font-weight:600;}
+  .dir-item .fill{font-family:var(--mono);font-size:.78rem;color:var(--ink-faint);display:block;margin-top:4px;}
+
+  /* ---------- RESULTADOS ---------- */
+  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+  @media (max-width:760px){.kpi-row{grid-template-columns:repeat(2,1fr);}}
+  .kpi{background:var(--surface);padding:20px;}
+  .kpi .n{font-family:var(--mono);font-size:1.7rem;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums;}
+  .kpi .l{font-size:.82rem;color:var(--ink-soft);margin-top:4px;}
+  .example-flag{
+    display:inline-block;margin-top:18px;font-family:var(--mono);font-size:.72rem;text-transform:uppercase;
+    letter-spacing:.06em;color:var(--ink-faint);
+  }
+
+  .servicio-social{
+    margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:28px;
+  }
+  @media (max-width:760px){.servicio-social{grid-template-columns:1fr;}}
+  .servicio-social h4{font-size:1.02rem;}
+  .servicio-social p{font-size:.92rem;color:var(--ink-soft);margin-top:8px;}
+
+  footer{
+    background:var(--ink);color:var(--paper);padding-block:44px;
+    padding-bottom:calc(44px + env(safe-area-inset-bottom,0px));
+  }
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;align-items:center;}
+  footer .brand-name{color:var(--paper);}
+  footer p{color:color-mix(in srgb, var(--paper) 65%, transparent);font-size:.85rem;}
+
+  @media (prefers-reduced-motion:no-preference){
+    .fade-in{animation:fadeIn .5s ease both;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  }
+</style>
+</head>
+<body>
+
+
+<header class="site">
+  <div class="nav-inner">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">AcompañaNet</span>
+    </div>
+    <nav class="links">
+      <a href="#propuesta">Propuesta</a>
+      <a href="#ruta">Ruta de atención</a>
+      <a href="#semaforo">Semáforo</a>
+      <a href="#comunidad">Tutores &amp; estudiantes</a>
+      <a href="#resultados">Resultados</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero" id="propuesta">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">Servicio Social · PrepaNet</span>
+        <h1>Que ningún obstáculo, más que la falta de acompañamiento, saque a un estudiante de PrepaNet.</h1>
+        <p class="lede">AcompañaNet es una estrategia de seguimiento y acompañamiento para estudiantes de PrepaNet: detecta a tiempo lo que dificulta continuar en la modalidad virtual —organización del tiempo, hábitos de estudio, conectividad, dispositivos, adaptación y dudas académicas— y le da a cada tutor un criterio claro para actuar.</p>
+        <div class="hero-actions">
+          <a href="#semaforo" class="btn btn-primary">Probar la encuesta y el semáforo</a>
+          <a href="#comunidad" class="btn btn-ghost">Ver guías para tutores y estudiantes</a>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="n">3</div><div class="l">niveles de semáforo: verde, amarillo, rojo</div></div>
+          <div class="stat"><div class="n">4</div><div class="l">pasos de la ruta: detectar, acompañar, seguir, evaluar</div></div>
+          <div class="stat"><div class="n">6</div><div class="l">factores que evalúa la encuesta inicial</div></div>
+        </div>
+      </div>
+      <div class="hero-card">
+        <span class="tag" style="color:var(--ink-faint)">Qué NO es AcompañaNet</span>
+        <h3 style="margin-top:8px;">No diagnostica ni interviene en crisis</h3>
+        <p class="quote">La propuesta no busca diagnosticar problemas psicológicos o clínicos ni intervenir directamente en crisis personales complejas. Se limita a identificar obstáculos de permanencia académica y, cuando hace falta, canalizar el caso a la instancia institucional correspondiente.</p>
+        <p class="who">Alcance declarado de la estrategia</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- RUTA -->
+  <section class="tint" id="ruta">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Cómo opera</span>
+        <h2>Una ruta de atención en cuatro pasos</h2>
+        <p>Cada estudiante recorre la misma secuencia, en orden, desde que se detecta una dificultad hasta que se evalúa si el acompañamiento funcionó.</p>
+      </div>
+      <div class="ruta-row">
+        <div class="ruta-step">
+          <div class="ruta-num"><span class="dot"></span>PASO 01</div>
+          <h4>Detectar</h4>
+          <p>Encuesta inicial + observación del tutor para identificar factores de riesgo en tiempo, hábitos, conectividad, dispositivos, adaptación y academia.</p>
+        </div>
+        <div class="ruta-step">
+          <div class="ruta-num"><span class="dot"></span>PASO 02</div>
+          <h4>Acompañar</h4>
+          <p>El tutor contacta al estudiante según su nivel de semáforo, usando preguntas clave y criterios de acompañamiento definidos.</p>
+        </div>
+        <div class="ruta-step">
+          <div class="ruta-num"><span class="dot"></span>PASO 03</div>
+          <h4>Seguir</h4>
+          <p>Se registra el caso y se revisa periódicamente si el nivel de semáforo cambia, mejora o requiere canalización institucional.</p>
+        </div>
+        <div class="ruta-step">
+          <div class="ruta-num"><span class="dot"></span>PASO 04</div>
+          <h4>Evaluar</h4>
+          <p>Se miden participación, seguimiento, necesidades detectadas y casos atendidos para ajustar la estrategia cada periodo.</p>
+        </div>
+      </div>
+
+      <div class="ddhh">
+        <div class="mark">§26</div>
+        <div>
+          <p>AcompañaNet se vincula con el <strong>Derecho Humano a la Educación</strong>: al reducir los obstáculos de organización, conectividad y adaptación que empujan a un estudiante a abandonar la modalidad virtual, sostiene su posibilidad real de continuar y concluir su proceso educativo.</p>
+          <p class="art">Declaración Universal de los Derechos Humanos — Artículo 26</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEMAFORO + ENCUESTA DEMO -->
+  <section id="semaforo">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Herramienta central</span>
+        <h2>El semáforo de seguimiento</h2>
+        <p>Clasifica a cada estudiante en tres niveles, a partir de lo que responde en la encuesta inicial y de lo que observa su tutor.</p>
+      </div>
+
+      <div class="sem-legend">
+        <div class="sem-card green">
+          <h4><span class="sem-dot"></span>Verde</h4>
+          <p>Situación estable. El estudiante organiza su tiempo, tiene conectividad y dispositivo adecuados, y no reporta dificultades académicas relevantes.</p>
+        </div>
+        <div class="sem-card amber">
+          <h4><span class="sem-dot"></span>Amarillo</h4>
+          <p>Requiere seguimiento y acompañamiento. Hay una o más señales de riesgo —tiempo, hábitos, conectividad o adaptación— que conviene atender antes de que crezcan.</p>
+        </div>
+        <div class="sem-card red">
+          <h4><span class="sem-dot"></span>Rojo</h4>
+          <p>Requiere atención prioritaria y posible canalización a la instancia institucional correspondiente (académica, técnica o de servicios escolares).</p>
+        </div>
+      </div>
+
+      <div class="demo">
+        <div class="demo-head">
+          <div>
+            <h3>Encuesta inicial — demo</h3>
+            <p class="q-sub">Responde como ejemplo para ver cómo la encuesta clasifica un caso en el semáforo. No se guarda ninguna respuesta.</p>
+          </div>
+          <span class="badge">Ejemplo interactivo</span>
+        </div>
+
+        <div class="q-grid" id="quiz"></div>
+
+        <div class="demo-actions">
+          <button class="btn btn-primary" id="calcBtn">Calcular semáforo</button>
+          <button class="btn btn-ghost" id="resetBtn">Reiniciar</button>
+        </div>
+
+        <div class="demo-result" id="result">
+          <div class="sw" id="resultSwatch"></div>
+          <div>
+            <h4 id="resultTitle"></h4>
+            <p id="resultDesc"></p>
+          </div>
+        </div>
+        <p class="demo-note">Esta calculadora es ilustrativa: en la implementación real, los umbrales y el peso de cada factor los define el equipo de tutoría de PrepaNet junto con Servicio Social.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TUTORES / ESTUDIANTES -->
+  <section class="tint" id="comunidad">
+    <div class="wrap">
+      <div class="section-head" style="margin-inline:auto;text-align:center;">
+        <span class="eyebrow">Según quién te acompaña</span>
+        <h2>Guías para tutores y para estudiantes</h2>
+        <p style="margin-inline:auto;">Cada perfil necesita información distinta. Cambia entre las dos vistas.</p>
+      </div>
+
+      <div class="toggle-wrap">
+        <div class="toggle" role="tablist" aria-label="Elegir vista">
+          <button id="btnTutores" class="active" role="tab" aria-selected="true">Para tutores</button>
+          <button id="btnEstudiantes" role="tab" aria-selected="false">Para estudiantes</button>
+        </div>
+      </div>
+
+      <!-- TUTORES -->
+      <div class="pane active" id="paneTutores">
+        <div class="card-grid">
+          <div class="info-card">
+            <h4><span class="num">01</span>Pautas de contacto</h4>
+            <ul>
+              <li>Contacta primero por el canal que el estudiante ya usa (correo institucional, WhatsApp del grupo, sesión síncrona).</li>
+              <li>Da seguimiento a estudiantes en amarillo cada 1–2 semanas; a los de rojo, esta misma semana.</li>
+              <li>Documenta cada contacto: fecha, canal, respuesta y siguiente paso.</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4><span class="num">02</span>Preguntas clave</h4>
+            <ul>
+              <li>¿Cuánto tiempo a la semana le dedicas hoy a PrepaNet?</li>
+              <li>¿Qué materia o tema se te está complicando más?</li>
+              <li>¿Tu conexión o tu equipo te han fallado para entrar a clase o entregar tareas?</li>
+              <li>¿Qué necesitarías para sentir que puedes seguir el ritmo?</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4><span class="num">03</span>Criterios de acompañamiento</h4>
+            <p>Verde: reconocimiento breve y disponibilidad abierta. Amarillo: plan corto de 2–3 acciones con fecha de revisión. Rojo: contacto directo esta semana y evaluación conjunta de canalización.</p>
+          </div>
+          <div class="info-card">
+            <h4><span class="num">04</span>Cuándo canalizar</h4>
+            <p>Canaliza cuando la dificultad exceda lo académico u organizativo, o cuando el estudiante lo pida directamente. AcompañaNet identifica y deriva; no diagnostica ni da seguimiento clínico.</p>
+          </div>
+        </div>
+
+        <div class="protocol">
+          <h4>Protocolo de canalización — rojo</h4>
+          <ol>
+            <li>Confirma con el estudiante el motivo principal de la dificultad.</li>
+            <li>Ubica la instancia institucional correspondiente (académica, técnica, psicopedagógica o servicios escolares).</li>
+            <li>Realiza la derivación formal y registra el caso como canalizado.</li>
+            <li>Da seguimiento a que el estudiante haya sido atendido por esa instancia.</li>
+            <li>Actualiza el nivel de semáforo una vez recibida respuesta.</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- ESTUDIANTES -->
+      <div class="pane" id="paneEstudiantes">
+        <div class="card-grid">
+          <div class="info-card">
+            <h4><span class="num">01</span>Organiza tu tiempo</h4>
+            <ul>
+              <li>Bloquea horarios fijos para PrepaNet, igual que si fueran clases presenciales.</li>
+              <li>Divide cada módulo en metas semanales pequeñas y revisables.</li>
+              <li>Avisa a tu tutor apenas veas que un bloque de tiempo no te va a alcanzar.</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4><span class="num">02</span>Estudia mejor en línea</h4>
+            <ul>
+              <li>Ten un espacio fijo, con buena luz y sin distracciones, para tus sesiones síncronas.</li>
+              <li>Revisa la grabación de una clase antes de pedir apoyo adicional.</li>
+              <li>Usa el foro o chat del curso para dudas puntuales; guarda tu tutor para lo que de verdad lo necesite.</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4><span class="num">03</span>Si falla tu conexión o equipo</h4>
+            <p>Avisa a tu tutor el mismo día, no al final del módulo. Muchas extensiones y apoyos solo aplican si se reportan a tiempo.</p>
+          </div>
+          <div class="info-card">
+            <h4><span class="num">04</span>Directorio institucional</h4>
+            <p style="margin-bottom:4px;">Plantilla para completar con los datos reales de tu plantel:</p>
+            <div class="directorio" style="margin-top:10px;">
+              <div class="dir-item"><span class="role">Tutoría académica</span><span class="fill">[nombre del tutor · correo · horario]</span></div>
+              <div class="dir-item"><span class="role">Apoyo psicopedagógico</span><span class="fill">[área · correo · horario]</span></div>
+              <div class="dir-item"><span class="role">Soporte técnico</span><span class="fill">[mesa de ayuda · correo · horario]</span></div>
+              <div class="dir-item"><span class="role">Servicios escolares</span><span class="fill">[área · correo · horario]</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTADOS -->
+  <section id="resultados">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Reporte final</span>
+        <h2>Cómo se evalúa la estrategia</h2>
+        <p>Al cierre del periodo, AcompañaNet se mide con cuatro indicadores. Las cifras de abajo son un ejemplo de cómo se vería el reporte, no datos reales.</p>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi"><div class="n">86%</div><div class="l">participación en la encuesta inicial</div></div>
+        <div class="kpi"><div class="n">142</div><div class="l">estudiantes con seguimiento activo</div></div>
+        <div class="kpi"><div class="n">57</div><div class="l">necesidades distintas identificadas</div></div>
+        <div class="kpi"><div class="n">39</div><div class="l">casos atendidos o canalizados</div></div>
+      </div>
+      <span class="example-flag">— cifras de ejemplo para ilustrar el formato del reporte —</span>
+
+      <div class="servicio-social">
+        <div>
+          <h4>Actores</h4>
+          <p>Coordinación de PrepaNet, tutores académicos, prestador(a) de Servicio Social a cargo del diseño y seguimiento de AcompañaNet, e instancias institucionales de canalización (técnica, psicopedagógica, servicios escolares).</p>
+        </div>
+        <div>
+          <h4>Experiencia de Servicio Social</h4>
+          <p>El diseño, la aplicación de la encuesta inicial, la construcción del semáforo y el análisis del reporte final se desarrollan como parte de las horas de Servicio Social, con evidencia entregable en cada etapa de la ruta de atención.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <span class="brand-name" style="font-family:var(--serif);font-weight:700;">AcompañaNet</span>
+      <p style="margin-top:4px;">Estrategia de seguimiento y acompañamiento para estudiantes de PrepaNet.</p>
+    </div>
+    <p>Servicio Social · Derecho Humano a la Educación, Art. 26 DUDH</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var QUESTIONS = [
+    {key:"tiempo", label:"Tiempo disponible para PrepaNet", sub:"¿Cómo describirías el tiempo que le dedicas a la semana?",
+      opts:[{t:"Suficiente y constante",v:0},{t:"Irregular, según la semana",v:1},{t:"Muy poco o nulo",v:2}]},
+    {key:"habitos", label:"Hábitos de estudio", sub:"¿Cómo te organizas para avanzar en tus módulos?",
+      opts:[{t:"Tengo rutina y la sigo",v:0},{t:"Empiezo pero se me corta",v:1},{t:"No tengo una rutina",v:2}]},
+    {key:"conectividad", label:"Conectividad", sub:"¿Qué tan seguido tienes fallas de internet para entrar a clase o entregar?",
+      opts:[{t:"Casi nunca",v:0},{t:"A veces",v:1},{t:"Frecuentemente",v:2}]},
+    {key:"dispositivo", label:"Dispositivo", sub:"¿Tu equipo es suficiente para tomar tus clases y hacer tus tareas?",
+      opts:[{t:"Sí, sin problema",v:0},{t:"A medias, o lo comparto",v:1},{t:"No tengo uno adecuado",v:2}]},
+    {key:"adaptacion", label:"Adaptación a la modalidad virtual", sub:"¿Qué tan cómodo te sientes estudiando en línea?",
+      opts:[{t:"Cómodo",v:0},{t:"Me cuesta pero avanzo",v:1},{t:"Me cuesta mucho",v:2}]},
+    {key:"academico", label:"Dificultades académicas", sub:"¿Tienes materias o temas atorados actualmente?",
+      opts:[{t:"Ninguno relevante",v:0},{t:"Uno o dos temas",v:1},{t:"Varias materias",v:2}]}
+  ];
+
+  var answers = {};
+  var quiz = document.getElementById("quiz");
+
+  QUESTIONS.forEach(function(q){
+    var block = document.createElement("div");
+    block.className = "q";
+    var optsHtml = q.opts.map(function(o,i){
+      return '<button type="button" class="opt" data-key="'+q.key+'" data-val="'+o.v+'" aria-pressed="false">'+o.t+'</button>';
+    }).join("");
+    block.innerHTML = '<div class="q-label">'+q.label+'</div><div class="q-sub">'+q.sub+'</div><div class="opts">'+optsHtml+'</div>';
+    quiz.appendChild(block);
+  });
+
+  quiz.addEventListener("click", function(e){
+    var btn = e.target.closest(".opt");
+    if(!btn) return;
+    var key = btn.getAttribute("data-key");
+    var val = parseInt(btn.getAttribute("data-val"),10);
+    answers[key] = val;
+    quiz.querySelectorAll('.opt[data-key="'+key+'"]').forEach(function(b){
+      b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+    });
+  });
+
+  var result = document.getElementById("result");
+  var swatch = document.getElementById("resultSwatch");
+  var title = document.getElementById("resultTitle");
+  var desc = document.getElementById("resultDesc");
+
+  document.getElementById("calcBtn").addEventListener("click", function(){
+    var answered = Object.keys(answers).length;
+    if(answered < QUESTIONS.length){
+      title.textContent = "Faltan respuestas";
+      desc.textContent = "Responde las "+QUESTIONS.length+" preguntas para calcular el semáforo de ejemplo.";
+      swatch.style.background = "var(--ink-faint)";
+      result.classList.add("show");
+      return;
+    }
+    var sum = Object.values(answers).reduce(function(a,b){return a+b;},0);
+    var level, css, name, text;
+    if(sum <= 3){
+      level = "green"; name = "Verde — situación estable";
+      text = "El caso de ejemplo no muestra señales de riesgo relevantes. Se sugiere seguimiento ligero.";
+    } else if(sum <= 7){
+      level = "amber"; name = "Amarillo — requiere seguimiento";
+      text = "Hay señales de riesgo en al menos un factor. Se sugiere que el tutor contacte al estudiante y arme un plan corto.";
+    } else {
+      level = "red"; name = "Rojo — requiere atención prioritaria";
+      text = "Varios factores muestran riesgo alto. Se sugiere contacto esta misma semana y valorar canalización institucional.";
+    }
+    var colorVar = level === "green" ? "var(--sem-green)" : level === "amber" ? "var(--sem-amber)" : "var(--sem-red)";
+    swatch.style.background = colorVar;
+    title.textContent = name;
+    desc.textContent = text;
+    result.classList.add("show");
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", function(){
+    answers = {};
+    quiz.querySelectorAll(".opt").forEach(function(b){ b.setAttribute("aria-pressed","false"); });
+    result.classList.remove("show");
+  });
+
+  // Toggle Tutores / Estudiantes
+  var btnT = document.getElementById("btnTutores");
+  var btnE = document.getElementById("btnEstudiantes");
+  var paneT = document.getElementById("paneTutores");
+  var paneE = document.getElementById("paneEstudiantes");
+  function showTutores(){
+    btnT.classList.add("active"); btnE.classList.remove("active");
+    btnT.setAttribute("aria-selected","true"); btnE.setAttribute("aria-selected","false");
+    paneT.classList.add("active"); paneE.classList.remove("active");
+  }
+  function showEstudiantes(){
+    btnE.classList.add("active"); btnT.classList.remove("active");
+    btnE.setAttribute("aria-selected","true"); btnT.setAttribute("aria-selected","false");
+    paneE.classList.add("active"); paneT.classList.remove("active");
+  }
+  btnT.addEventListener("click", showTutores);
+  btnE.addEventListener("click", showEstudiantes);
+})();
+</script>
+</body>
+</html>
